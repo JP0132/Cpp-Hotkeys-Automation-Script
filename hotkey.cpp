@@ -4,15 +4,29 @@
 #include <codecvt> // for std::wstring_convert
 #include <locale>  // for std::wstring_convert
 
+// Function to convert narrow string to wide string
 std::wstring StringToWideString(const std::string &narrowString)
 {
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
     return converter.from_bytes(narrowString);
 }
 
+// Previous method to convert narrow strings to wide strings
+// wchar_t ConvertStringToWideString(const std::string &string)
+// {
+//     // Converting strings from ANSI to wide-character string
+//     int size_needed = MultiByteToWideChar(CP_UTF8, 0, string.c_str(), -1, NULL, 0);
+//     wchar_t *widePath = new wchar_t[size_needed];
+//     MultiByteToWideChar(CP_UTF8, 0, string.c_str(), -1, widePath, size_needed);
+//     return *widePath;
+//     // Don't forget to free memory allocated for widePath
+//     // delete[] widePath;
+// }
+
 // Function to open a folder
 void OpenFolder(const std::string &folderPath)
 {
+    // ShellExecute only accepts wide strings, converting here
     std::wstring widePath = StringToWideString(folderPath);
     ShellExecuteW(NULL, L"open", widePath.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
@@ -58,6 +72,7 @@ void ProcessHotkey(int hotkeyID)
         break;
     }
 }
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     // Register a hotkey (Ctrl + Alt + C) to open the clips folder
@@ -95,6 +110,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         return 1;
     }
 
+    // Success message for console
     std::cout << "Hotkey registered successfully!" << std::endl;
 
     MSG msg;
